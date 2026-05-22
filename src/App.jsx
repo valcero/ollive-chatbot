@@ -29,7 +29,7 @@ const SendIcon = () => (
 );
 
 function App() {
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+  const [apiKey, setApiKey] = useState(() => (localStorage.getItem('gemini_api_key') || '').trim());
   const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-1.5-flash');
   const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState([
@@ -44,9 +44,10 @@ function App() {
 
   // Initialize Gemini Chat
   useEffect(() => {
-    if (apiKey) {
+    const trimmedKey = apiKey.trim();
+    if (trimmedKey) {
       try {
-        const genAI = new MonitoredGenerativeAI(apiKey);
+        const genAI = new MonitoredGenerativeAI(trimmedKey);
         const model = genAI.getGenerativeModel({ model: selectedModel });
         chatRef.current = model.startChat({
           history: [],
@@ -69,7 +70,7 @@ function App() {
   }, [messages, isLoading]);
 
   const handleSaveApiKey = (e) => {
-    const key = e.target.value;
+    const key = e.target.value.trim();
     setApiKey(key);
     localStorage.setItem('gemini_api_key', key);
   };
