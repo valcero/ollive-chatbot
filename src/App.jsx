@@ -30,7 +30,7 @@ const SendIcon = () => (
 
 function App() {
   const [apiKey, setApiKey] = useState(() => (localStorage.getItem('gemini_api_key') || '').trim());
-  const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-1.5-flash');
+  const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-2.5-flash');
   const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState([
     { role: 'model', text: 'Hello! I am your AI assistant. How can I help you today?' }
@@ -148,10 +148,10 @@ function App() {
           />
           <p style={{ marginTop: '10px', marginBottom: '5px' }}>Select Model:</p>
           <select value={selectedModel} onChange={handleModelChange}>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Default)</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Default)</option>
             <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
             <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
           </select>
           <p style={{ fontSize: '11px', opacity: 0.7, marginTop: '10px' }}>
