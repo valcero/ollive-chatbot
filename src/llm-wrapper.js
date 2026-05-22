@@ -30,7 +30,7 @@ export class MonitoredChatSession {
     this.sessionId = sessionId;
   }
 
-  async sendMessage(text) {
+  async sendMessage(text, options) {
     const startTime = performance.now();
     const timestampStart = new Date().toISOString();
     let status = 'success';
@@ -39,7 +39,7 @@ export class MonitoredChatSession {
     let outputText = '';
 
     try {
-      const result = await this.chatSession.sendMessage(text);
+      const result = await this.chatSession.sendMessage(text, options);
       const response = await result.response;
       outputText = response.text(); // Capture full output
 
@@ -53,8 +53,13 @@ export class MonitoredChatSession {
       
       return result;
     } catch (err) {
-      status = 'error';
-      error = err.message || 'Unknown error';
+      if (err.name === 'AbortError' || err.message?.includes('abort')) {
+        status = 'cancelled';
+        error = 'Request cancelled by user';
+      } else {
+        status = 'error';
+        error = err.message || 'Unknown error';
+      }
       throw err;
     } finally {
       const endTime = performance.now();

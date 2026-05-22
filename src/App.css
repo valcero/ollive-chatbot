@@ -1,12 +1,13 @@
 .app-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
-  max-width: 800px;
+  max-width: 1100px;
   height: 100vh;
   background: var(--bg-color);
   position: relative;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
 .header {
@@ -260,4 +261,180 @@
   margin-bottom: 10px;
   font-size: 0.9rem;
   text-align: center;
+}
+
+/* --- Telemetry Sidebar & Session Management Styles --- */
+.sidebar {
+  width: 260px;
+  background: var(--bg-color-lighter);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.new-chat-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed var(--primary-color);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.new-chat-btn:hover {
+  background: rgba(168, 85, 247, 0.05);
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+.sidebar-sessions {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.session-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color);
+}
+
+.session-item.active {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: var(--primary-color);
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.session-preview {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-date {
+  font-size: 0.7rem;
+  color: var(--text-color-muted);
+}
+
+.session-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.session-item:hover .session-delete-btn {
+  opacity: 1;
+}
+
+.session-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* --- Chat Main Panel Alignment --- */
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.active-model-tag {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: var(--text-color-muted);
+  font-weight: normal;
+  margin-left: 10px;
+}
+
+/* --- Cancel active generation UI --- */
+.loading-container-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+  animation: slideUp 0.3s ease-out;
+}
+
+.cancel-gen-btn {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-gen-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* --- Responsive Media Layout --- */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .app-container {
+    max-width: 100%;
+  }
 }

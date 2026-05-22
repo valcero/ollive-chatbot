@@ -72,7 +72,7 @@ const LogSchema = z.object({
     start: z.string().datetime(),
     end: z.string().datetime()
   }),
-  status: z.enum(['success', 'error']),
+  status: z.enum(['success', 'error', 'cancelled']),
   error: z.string().nullable().optional(),
   sessionId: z.string().min(1),
   inputText: z.string().optional(),
@@ -135,6 +135,84 @@ app.post('/api/logs', (req, res) => {
     console.error('Unexpected server error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// list all conversations
+app.get('/api/sessions', (req, res) => {
+  db.all(`
+    SELECT s.id, s.created_at, 
+           (SELECT content FROM messages WHERE session_id = s.id ORDER BY id ASC LIMIT 1) as preview
+    FROM sessions s
+    ORDER BY s.created_at DESC
+  `, [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching sessions:', err);
+      return res.status(500).json({ error: 'Database error fetching sessions' });
+    }
+    res.json(rows);
+  });
+});
+
+// retrieve complete message history
+app.get('/api/sessions/:id/messages', (req, res) => {
+  const sessionId = req.params.id;
+  db.all(`
+    SELECT role, content 
+    FROM messages 
+    WHERE session_id = ? 
+    ORDER BY id ASC
+  `, [sessionId], (err, rows) => {
+    if (err) {
+      console.error('Error fetching session messages:', err);
+      return res.status(500).json({ error: 'Database error fetching messages' });
+    }
+    res.json(rows);
+  });
+});
+
+//delete a session 
+app.delete('/api/sessions/:id', (req, res) => {
+  const sessionId = req.params.id;
+
+  db.serialize(() => {
+    let aborted = false;
+    db.run(`
+      DELETE FROM inference_logs 
+      WHERE message_id IN (SELECT id FROM messages WHERE session_id = ?)
+    `, [sessionId], (err) => {
+      if (err) {
+        console.error('Error deleting inference logs:', err);
+        aborted = true;
+        return res.status(500).json({ error: 'Database error deleting telemetry records' });
+      }
+    });
+
+    db.run(`
+      DELETE FROM messages 
+      WHERE session_id = ?
+    `, [sessionId], (err) => {
+      if (aborted) return;
+      if (err) {
+        console.error('Error deleting messages:', err);
+        aborted = true;
+        return res.status(500).json({ error: 'Database error deleting conversation messages' });
+      }
+    });
+
+    db.run(`
+      DELETE FROM sessions 
+      WHERE id = ?
+    `, [sessionId], function (err) {
+      if (aborted) return;
+      if (err) {
+        console.error('Error deleting session:', err);
+        return res.status(500).json({ error: 'Database error deleting session' });
+      }
+
+      console.log(`[INGEST] Deleted session ${sessionId} and all associated data.`);
+      res.json({ success: true, message: `Session ${sessionId} deleted successfully` });
+    });
+  });
 });
 
 app.listen(PORT, () => {
