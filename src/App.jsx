@@ -30,6 +30,7 @@ const SendIcon = () => (
 
 function App() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+  const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-1.5-flash');
   const [showSettings, setShowSettings] = useState(false);
   const [messages, setMessages] = useState([
     { role: 'model', text: 'Hello! I am your AI assistant. How can I help you today?' }
@@ -46,7 +47,7 @@ function App() {
     if (apiKey) {
       try {
         const genAI = new MonitoredGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: selectedModel });
         chatRef.current = model.startChat({
           history: [],
           generationConfig: {
@@ -54,10 +55,10 @@ function App() {
           },
         });
       } catch (err) {
-        setError("Failed to initialize Gemini. Check your API key.");
+        setError("Failed to initialize Gemini. Check your API key or model availability.");
       }
     }
-  }, [apiKey]);
+  }, [apiKey, selectedModel]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -71,6 +72,12 @@ function App() {
     const key = e.target.value;
     setApiKey(key);
     localStorage.setItem('gemini_api_key', key);
+  };
+
+  const handleModelChange = (e) => {
+    const val = e.target.value;
+    setSelectedModel(val);
+    localStorage.setItem('gemini_model', val);
   };
 
   const handleSendMessage = async (e) => {
@@ -131,14 +138,22 @@ function App() {
       {showSettings && (
         <div className="settings-panel">
           <h3>Settings</h3>
-          <p>Enter your Gemini API key to start chatting.</p>
+          <p>Enter your Gemini API key:</p>
           <input 
             type="password" 
             placeholder="AIzaSy..." 
             value={apiKey}
             onChange={handleSaveApiKey}
           />
-          <p style={{ fontSize: '11px', opacity: 0.7 }}>
+          <p style={{ marginTop: '10px', marginBottom: '5px' }}>Select Model:</p>
+          <select value={selectedModel} onChange={handleModelChange}>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Default)</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+          </select>
+          <p style={{ fontSize: '11px', opacity: 0.7, marginTop: '10px' }}>
             Your key is stored locally in your browser.
           </p>
         </div>

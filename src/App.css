@@ -69,7 +69,8 @@
   font-size: 1rem;
 }
 
-.settings-panel input {
+.settings-panel input,
+.settings-panel select {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
@@ -80,7 +81,8 @@
   outline: none;
 }
 
-.settings-panel input:focus {
+.settings-panel input:focus,
+.settings-panel select:focus {
   border-color: var(--primary-color);
 }
 
