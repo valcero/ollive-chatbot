@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # The Backend Ingestion Service
+  api:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount a volume specifically for the sqlite database directory
+      - db_data:/app/data
+    environment:
+      - DB_DIR=/app/data
+
+  # The Frontend React UI
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
