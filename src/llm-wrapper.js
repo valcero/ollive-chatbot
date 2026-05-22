@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// A mock ingestion endpoint. In a real app, this would be a real URL.
-const INGESTION_ENDPOINT = 'http://localhost:3000/api/logs';
+// Dynamic API endpoint using Vite environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const INGESTION_ENDPOINT = `${API_BASE_URL}/api/logs`;
 
 async function sendLogToIngestion(metadata) {
   try {
